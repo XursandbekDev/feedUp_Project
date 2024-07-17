@@ -42,10 +42,10 @@ export const apiSlice = createApi({
             }),
         }),
         loginUser: builder.mutation({
-            query: ({ email, password }) => ({
+            query: ({ token }) => ({
                 url: "login",
                 method: "POST",
-                data: { email, password },
+                data: { token },
             }),
         }),
         createCategory: builder.mutation({
@@ -151,17 +151,37 @@ export const apiSlice = createApi({
                 },
             }),
         }),
+        // createCartItem: builder.mutation({
+        //     query: ({ token, product_id, quantity }) => ({
+        //         url: "cartItem/create",
+        //         method: "POST",
+        //         data: { token, product_id, quantity },
+        //     }),
+        // }),
+        // getCartItems: builder.query({
+        //     query: () => ({
+        //         url: "cartItem/get",
+        //         method: "GET",
+        //     }),
+        // }),
         createCartItem: builder.mutation({
-            query: ({ token, product_id, quantity }) => ({
+            query: ({ product_id, quantity }) => ({
                 url: "cartItem/create",
                 method: "POST",
-                data: { token, product_id, quantity },
+                data: {
+                    token: localStorage.getItem("token"),
+                    product_id,
+                    quantity,
+                },
             }),
         }),
         getCartItems: builder.query({
             query: () => ({
                 url: "cartItem/get",
                 method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
             }),
         }),
         deleteCartItem: builder.mutation({

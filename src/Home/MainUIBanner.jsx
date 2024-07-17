@@ -19,7 +19,8 @@ function MainUIBanner({ item }) {
         const token = localStorage.getItem("token");
         if (token) {
             try {
-                setQuantity(newQuantity); // Update quantity in state
+                setQuantity(newQuantity);
+                console.log(setQuantity);
                 setWallet(wallet + parseInt(item.price));
             } catch (error) {
                 console.error("Failed to create cart item:", error);

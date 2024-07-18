@@ -7,17 +7,21 @@ import axios from "axios";
 
 const getToken = async () => {
     try {
-        const response = await axios.get(
-            "http://feed-up-api.komiljonovdev.uz/api/getToken"
-        );
-        const token = response.data.token;
-        localStorage.setItem("token", token); // Store token in localStorage
-        console.log(token);
+        const token = localStorage.getItem("token");
+        if (!token) {
+            const response = await axios.get(
+                "http://feed-up-api.komiljonovdev.uz/api/getToken"
+            );
+            const newToken = response.data.token;
+            localStorage.setItem("token", newToken); // Store token in localStorage
+            console.log(newToken);
+        }
+        console.log(token)
     } catch (error) {
         console.error("Token olishda xatolik:", error);
     }
-};
 
+};
 
 function Main({ search, setSearch }) {
     useEffect(() => {
@@ -61,7 +65,6 @@ function Main({ search, setSearch }) {
                     Serverda xatolik...
                 </p>
             )}
-
             {isSuccess && (
                 <main className="pt-5">
                     <MainUI

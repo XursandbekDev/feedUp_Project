@@ -4,7 +4,9 @@ import { useGetCartItemsQuery } from "../services/apiSlice";
 import useAuth from "../hooks/useAuth";
 
 function Basket() {
-    useAuth(); // Token olish
+    const token = localStorage.getItem("token");
+    console.log(token);
+    useAuth();
     const {
         data: basketItems,
         error,
@@ -56,11 +58,6 @@ function Basket() {
                                         Sanoat bo'limi:{" "}
                                         {item.food.category.name}
                                     </p>
-                                    <div className="flex justify-between items-center">
-                                        <p className="text-lg text-gray-700">
-                                            Miqdori: {item.count}
-                                        </p>
-                                    </div>
                                 </div>
                             </div>
                         ))}

@@ -151,19 +151,7 @@ export const apiSlice = createApi({
                 },
             }),
         }),
-        // createCartItem: builder.mutation({
-        //     query: ({ token, product_id, quantity }) => ({
-        //         url: "cartItem/create",
-        //         method: "POST",
-        //         data: { token, product_id, quantity },
-        //     }),
-        // }),
-        // getCartItems: builder.query({
-        //     query: () => ({
-        //         url: "cartItem/get",
-        //         method: "GET",
-        //     }),
-        // }),
+   
         createCartItem: builder.mutation({
             query: ({ product_id, quantity }) => ({
                 url: "cartItem/create",

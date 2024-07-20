@@ -3,12 +3,10 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import Admin from "./pages/admin";
 import Basket from "./Basket";
-import BasketUI from "./Basket/BasketUI";
 import AdminLogin from "./AdminLogin";
 import CategoriesAdmin from "./pages/admin/Category";
 import PrivateRoute from "./components/PrivateRoute";
 import CategoryPage from "./pages/admin/Category/CategoryPage";
-import AdminUI from "./pages/admin/Products/AddProducts";
 import AddProducts from "./pages/admin/Products/AddProducts";
 import Products from "./pages/admin/Products/Products";
 
@@ -18,9 +16,14 @@ function App() {
     const [wallet, setWallet] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
-    const [token, setToken] = useState(localStorage.getItem("token") || "");
     const openModal = () => setIsOpen(true);
     const closeModal = () => setIsOpen(false);
+    const [userToken, setUserToken] = useState(
+        localStorage.getItem("userToken") || ""
+    );
+    const [adminToken, setAdminToken] = useState(
+        localStorage.getItem("adminToken") || ""
+    );
 
     return (
         <Context.Provider
@@ -32,29 +35,29 @@ function App() {
                 isOpen,
                 openModal,
                 closeModal,
-                token,
-                setToken,
+                userToken,
+                setUserToken,
+                adminToken,
+                setAdminToken,
             }}
         >
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/basket" element={<Basket />} />
-                {/* <Route path="/basketUI" element={<BasketUI />} /> */}
                 <Route path="/login" element={<AdminLogin />} />
 
                 <Route
                     path="/admin/*"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute tokenType="admin">
                             <Admin />
                         </PrivateRoute>
                     }
                 />
-
                 <Route
                     path="/category/create"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute tokenType="admin">
                             <CategoriesAdmin />
                         </PrivateRoute>
                     }
@@ -62,16 +65,15 @@ function App() {
                 <Route
                     path="/products/add"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute tokenType="admin">
                             <AddProducts />
                         </PrivateRoute>
                     }
                 />
-
                 <Route
                     path="/products"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute tokenType="admin">
                             <Products />
                         </PrivateRoute>
                     }
@@ -79,7 +81,7 @@ function App() {
                 <Route
                     path="/categories"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute tokenType="admin">
                             <CategoryPage />
                         </PrivateRoute>
                     }

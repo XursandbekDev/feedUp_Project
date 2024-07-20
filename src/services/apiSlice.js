@@ -1,11 +1,14 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import axios from "axios";
 
+// Custom base query function
 const axiosBaseQuery =
     ({ baseUrl } = { baseUrl: "" }) =>
-    async ({ url, method, data, params, headers }) => {
+    async ({ url, method, data, params, headers, tokenType }) => {
         try {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem(
+                tokenType === "admin" ? "adminToken" : "userToken"
+            );
             const result = await axios({
                 url: baseUrl + url,
                 method,
@@ -39,13 +42,15 @@ export const apiSlice = createApi({
             query: () => ({
                 url: "getToken",
                 method: "GET",
+                tokenType: "user", // Token turini belgilash
             }),
         }),
-        loginUser: builder.mutation({
-            query: ({ token }) => ({
+        loginAdmin: builder.mutation({
+            query: ({ email, password }) => ({
                 url: "login",
                 method: "POST",
-                data: { token },
+                data: { email, password },
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         createCategory: builder.mutation({
@@ -53,6 +58,7 @@ export const apiSlice = createApi({
                 url: "category/create",
                 method: "POST",
                 data: formData,
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         updateCategory: builder.mutation({
@@ -60,24 +66,28 @@ export const apiSlice = createApi({
                 url: `categories/${id}`,
                 method: "PATCH",
                 data: formData,
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         deleteCategory: builder.mutation({
             query: ({ id }) => ({
                 url: `categories/${id}`,
                 method: "DELETE",
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         getCategories: builder.query({
             query: () => ({
                 url: "categories",
                 method: "GET",
+                tokenType: "user", // Token turini belgilash
             }),
         }),
         getFoods: builder.query({
             query: () => ({
                 url: "products",
                 method: "GET",
+                tokenType: "user", // Token turini belgilash
             }),
         }),
         addFood: builder.mutation({
@@ -87,14 +97,18 @@ export const apiSlice = createApi({
                 data: foodData,
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "userToken"
+                    )}`, // Tokenni shu yerga qo'shing
                 },
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         deleteFood: builder.mutation({
             query: ({ id }) => ({
                 url: `products/${id}`,
                 method: "DELETE",
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         updateFood: builder.mutation({
@@ -104,81 +118,78 @@ export const apiSlice = createApi({
                 data: foodData,
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "userToken"
+                    )}`, // Tokenni shu yerga qo'shing
                 },
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         createOrder: builder.mutation({
-            query: ({ orderData }) => ({
-                url: "order/create",
-                method: "POST",
-                data: { ...orderData, token: localStorage.getItem("token") },
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            }),
+            query: ({ orderData }) => {
+                const token = localStorage.getItem("userToken");
+                return {
+                    url: "order/create",
+                    method: "POST",
+                    data: {
+                        ...orderData, // orderData ob'ektini qo'shing
+                        token: token, // Tokenni shu yerga qo'shing
+                    },
+                    tokenType: "user", // Token turini belgilash
+                };
+            },
         }),
         getOrders: builder.query({
             query: () => ({
                 url: "orders",
                 method: "GET",
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         completeOrder: builder.mutation({
             query: ({ order_id }) => ({
                 url: `orders/${order_id}/complete`,
                 method: "PATCH",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         cancelOrder: builder.mutation({
             query: ({ order_Id }) => ({
                 url: `orders/${order_Id}/cancel`,
                 method: "PATCH",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
         deleteOrder: builder.mutation({
             query: ({ order_Id }) => ({
                 url: `orders/${order_Id}`,
                 method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
+                tokenType: "admin", // Token turini belgilash
             }),
         }),
-   
         createCartItem: builder.mutation({
             query: ({ product_id, quantity }) => ({
                 url: "cartItem/create",
                 method: "POST",
                 data: {
-                    token: localStorage.getItem("token"),
                     product_id,
                     quantity,
                 },
+                tokenType: "user", // Token turini belgilash
             }),
         }),
         getCartItems: builder.query({
             query: () => ({
                 url: "cartItem/get",
                 method: "GET",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
+                tokenType: "user", // Token turini belgilash
             }),
         }),
         deleteCartItem: builder.mutation({
             query: ({ cartItem_id }) => ({
                 url: `cartItems/${cartItem_id}`,
                 method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
+                tokenType: "user", // Token turini belgilash
             }),
         }),
     }),
@@ -186,7 +197,7 @@ export const apiSlice = createApi({
 
 export const {
     useGetTokenMutation,
-    useLoginUserMutation,
+    useLoginAdminMutation,
     useCreateCategoryMutation,
     useUpdateCategoryMutation,
     useDeleteCategoryMutation,

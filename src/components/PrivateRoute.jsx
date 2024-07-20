@@ -1,10 +1,17 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
-const PrivateRoute = ({ children }) => {
-  const isAuthenticated = !!localStorage.getItem("token"); 
+const PrivateRoute = ({ children, tokenType }) => {
+    const location = useLocation();
+    const tokenKey = tokenType === "admin" ? "adminToken" : "userToken";
+    const token = localStorage.getItem(tokenKey);
 
-  return isAuthenticated ? children : <Navigate to="/login" />;
+    // Token mavjudligini tekshirish
+    if (!token) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    return children;
 };
 
 export default PrivateRoute;

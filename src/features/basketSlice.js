@@ -1,22 +1,36 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
+
+const initialState = {
+    items: [],
+};
 
 const basketSlice = createSlice({
     name: "basket",
-    initialState: {
-        basket: [],
-    },
+    initialState,
     reducers: {
-        addBasket: (state, action) => {
-            const exists = state.basket.find(item => item.food.title === action.payload.title);
-
-            if (exists) {
-                exists.count += 1;  
+        addToBasket: (state, action) => {
+            const existingItem = state.items.find(
+                (item) => item.id === action.payload.id
+            );
+            if (existingItem) {
+                existingItem.quantity = action.payload.quantity;
             } else {
-                state.basket.push({ count: 1, food: { ...action.payload } }); 
+                state.items.push(action.payload);
             }
-        }
-    }
+        },
+        removeFromBasket: (state, action) => {
+            state.items = state.items.filter((item) => item.id !== action.payload);
+        },
+    },
 });
 
-export const { addBasket } = basketSlice.actions;
+const selectBasket = (state) => state.basket;
+
+export const selectBasketItems = createSelector(
+  [selectBasket],
+  (basket) => basket.items
+);
+
+export const { addToBasket, removeFromBasket } = basketSlice.actions;
 export default basketSlice.reducer;

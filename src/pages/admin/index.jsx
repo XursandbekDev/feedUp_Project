@@ -8,29 +8,19 @@ import Sidebar from "./Sidebar/Sidebar";
 import CategoriesAdmin from "./Category";
 import CategoriesCreate from "./Category/CategoriesCreate";
 import CategoryPage from "./Category/CategoryPage";
+import AdminOrders from "./AdminOrder";
 
 function Admin() {
     const navigate = useNavigate();
     const [user, setUser] = useState({});
     const [addFood] = useAddFoodMutation();
 
-    useEffect(() => {
-        if (
-            localStorage.getItem("token") === "" ||
-            localStorage.getItem("token") === null
-        ) {
-            navigate("/");
-        }
-    }, [navigate]);
-
     return (
         <>
-        
-            <div className="bg-white flex">
+            <div className="bg-white flex flex-grow">
                 <Sidebar />
+                <AdminOrders />
             </div>
-            
-
         </>
     );
 }

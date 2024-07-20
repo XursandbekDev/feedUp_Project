@@ -1,38 +1,44 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { RotatingLines } from "react-loader-spinner";
 import { useGetCategoriesQuery, useGetFoodsQuery } from "../services/apiSlice";
 import MainUI from "./MainUI";
 import HomeFooter from "./HomeFooter";
 import axios from "axios";
+import { Context } from "../App";
 
-const getToken = async () => {
+const getToken = async (setUserToken) => {
     try {
-        const token = localStorage.getItem("token");
+        let token = localStorage.getItem("userToken");
         if (!token) {
             const response = await axios.get(
                 "http://feed-up-api.komiljonovdev.uz/api/getToken"
             );
-            const newToken = response.data.token;
-            localStorage.setItem("token", newToken); // Store token in localStorage
-            console.log(newToken);
+            token = response.data.token;
+            localStorage.setItem("userToken", token); // Store token in localStorage
+            setUserToken(token); // Update context state
+            console.log("New token:", token);
+        } else {
+            setUserToken(token); // Update context state if token already exists
+            console.log("Existing token:", token);
         }
-        console.log(token)
     } catch (error) {
         console.error("Token olishda xatolik:", error);
     }
-
 };
 
 function Main({ search, setSearch }) {
+    const { setUserToken } = useContext(Context);
+
     useEffect(() => {
-        getToken();
-    }, []);
+        getToken(setUserToken);
+    }, [setUserToken]);
 
     const {
         data: categories,
         isLoading: isLoadingCategories,
         isError: isErrorCategories,
     } = useGetCategoriesQuery();
+
     const {
         data: products,
         isLoading: isLoadingProducts,

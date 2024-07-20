@@ -18,7 +18,8 @@ function AdminLogin() {
                 "http://feed-up-api.komiljonovdev.uz/api/login",
                 data
             );
-            localStorage.setItem("token", res.data.token);
+            // Tokenni localStoragega saqlash
+            localStorage.setItem("adminToken", res.data.token);
             navigate("/admin");
         } catch (error) {
             if (error.response && error.response.data) {
@@ -32,10 +33,10 @@ function AdminLogin() {
     };
 
     useEffect(() => {
-        if (localStorage.getItem("token")) {
+        if (localStorage.getItem("adminToken")) {
             navigate("/admin");
         }
-    }, [navigate]);
+    }, [navigate]); // Dependency arrayda faqat 'navigate' qo'shilgan
 
     return (
         <div className="flex justify-center mt-20">
@@ -60,6 +61,7 @@ function AdminLogin() {
                                 type="email"
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 name="email"
+                                autoComplete="email"
                             />
                         </div>
                         <div className="mb-4">
@@ -74,6 +76,7 @@ function AdminLogin() {
                                 type="password"
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 name="password"
+                                autoComplete="current-password"
                             />
                         </div>
                         <div className="flex items-center justify-between">

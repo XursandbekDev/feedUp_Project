@@ -1,45 +1,55 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useCreateCartItemMutation } from "../services/apiSlice";
+import { addToBasket, removeFromBasket } from "../features/basketSlice";
 import { Context } from "../App";
 
 function MainUIBanner({ item }) {
     const dispatch = useDispatch();
     const { wallet, setWallet } = useContext(Context);
-    const [createCartItem] = useCreateCartItemMutation();
-
-    const basket = useSelector((state) =>
-        state.basket.basket.find((basketItem) => basketItem.food.id === item.id)
+    const basketItem = useSelector((state) =>
+        state.basket.items.find((basketItem) => basketItem.id === item.id)
     );
-    const initialQuantity = basket ? basket.count : 0;
-    const [quantity, setQuantity] = useState(initialQuantity); // State to manage quantity
 
-    const PlusHandler = async () => {
+    const initialQuantity = basketItem ? basketItem.quantity : 0;
+    const [quantity, setQuantity] = useState(initialQuantity);
+
+    useEffect(() => {
+        setQuantity(initialQuantity);
+    }, [initialQuantity]);
+
+    const PlusHandler = () => {
         const newQuantity = quantity + 1;
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                setQuantity(newQuantity);
-                console.log(setQuantity);
-                setWallet(wallet + parseInt(item.price));
-            } catch (error) {
-                console.error("Failed to create cart item:", error);
-            }
-        } else {
-            console.error("Token not found in localStorage");
-        }
+        setQuantity(newQuantity);
+        dispatch(
+            addToBasket({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                image: item.image,
+                quantity: newQuantity,
+            })
+        );
+        setWallet(wallet + parseInt(item.price));
     };
 
-    const MinusHandler = async () => {
-        const token = localStorage.getItem("token");
-        if (token && quantity > 0) {
+    const MinusHandler = () => {
+        if (quantity > 0) {
             const newQuantity = quantity - 1;
-            try {
-                setQuantity(newQuantity);
-                setWallet(wallet - parseInt(item.price));
-            } catch (error) {
-                console.error("Failed to create cart item:", error);
+            setQuantity(newQuantity);
+            if (newQuantity === 0) {
+                dispatch(removeFromBasket(item.id));
+            } else {
+                dispatch(
+                    addToBasket({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        image: item.image,
+                        quantity: newQuantity,
+                    })
+                );
             }
+            setWallet(wallet - parseInt(item.price));
         }
     };
 

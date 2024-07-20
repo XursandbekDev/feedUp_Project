@@ -11,8 +11,8 @@ const Sidebar = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/login');
+        localStorage.removeItem("adminToken"); // adminToken o'chiriladi
+        navigate("/login");
     };
 
     const menuItems = [
